@@ -124,9 +124,11 @@ export class AuthService {
       throw new NotFoundException('존재하지 않는 사용자입니다.');
     }
 
-    const { nickname, imageUri } = editProfileDto;
+    const { nickname, imageUri, email, schoolName } = editProfileDto;
     profile.nickname = nickname;
     profile.imageUri = imageUri;
+    profile.email = email;
+    profile.schoolName = schoolName;
 
     try {
       await this.userRepository.save(profile);
