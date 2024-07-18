@@ -29,7 +29,7 @@ export class MealController {
     status: 404,
     description: 'URL을 확인해주세요.',
   })
-  @ApiOperation({ summary: 'Meal' })
+  @ApiOperation({ summary: '급식' })
   @Get()
   async getMeal(@GetUser() user: User): Promise<MealInfo> {
     if (!user.schoolName) {

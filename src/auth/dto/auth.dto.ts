@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsNotEmpty,
   IsString,
@@ -7,10 +8,12 @@ import {
 } from 'class-validator';
 
 export class AuthDto {
+  @ApiProperty({ description: '학교명' })
   @IsString()
   @IsNotEmpty()
   schoolName: string;
 
+  @ApiProperty({ description: '이메일' })
   @IsString()
   @MinLength(6)
   @MaxLength(50)
@@ -19,6 +22,7 @@ export class AuthDto {
   })
   email: string;
 
+  @ApiProperty({ description: '비밀번호' })
   @IsString()
   @MinLength(8)
   @MaxLength(20)
