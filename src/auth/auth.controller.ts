@@ -31,7 +31,6 @@ export class AuthController {
   })
   @ApiOperation({ summary: '회원가입' })
   @Post('/signup')
-  // 회원가입 엔드포인트. ValidationPipe를 사용하여 입력 데이터 검증
   signup(@Body(ValidationPipe) authDto: AuthDto) {
     return this.authService.signup(authDto);
   }

@@ -6,6 +6,9 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostModule } from './post/post.module';
+import { ImageModule } from './image/image.module';
+import { CommentModule } from './comment/comment.module';
+import { LikeModule } from './like/like.module';
 
 @Module({
   imports: [
@@ -27,6 +30,9 @@ import { PostModule } from './post/post.module';
     MealModule,
     AuthModule,
     PostModule,
+    ImageModule,
+    CommentModule,
+    LikeModule,
   ],
   controllers: [AppController],
   providers: [ConfigService],

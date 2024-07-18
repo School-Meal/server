@@ -1,7 +1,9 @@
+import { Post } from 'src/post/entities/post.entity';
 import {
   BaseEntity,
   Column,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
@@ -32,4 +34,7 @@ export class User extends BaseEntity {
 
   @Column({ nullable: true })
   hashedRefreshToken?: string;
+
+  @OneToMany(() => Post, (post) => post.author)
+  posts: Post[];
 }
