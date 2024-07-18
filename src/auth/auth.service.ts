@@ -42,14 +42,17 @@ export class AuthService {
       await this.userRepository.save(user);
     } catch (error) {
       console.log(error);
-      if (error.code === '23505') {
+      if (error.code === 'ER_DUP_ENTRY') {
         throw new ConflictException('이미 존재하는 이메일입니다.');
       }
-
+      // 더 자세한 오류 정보를 로그에 기록
+      console.error('회원가입 오류:', error.message);
       throw new InternalServerErrorException(
         '회원가입 도중 에러가 발생했습니다.',
       );
     }
+
+    return { message: '회원가입이 완료되었습니다.' };
   }
 
   private async getTokens(payload: { email: string }) {
@@ -64,7 +67,11 @@ export class AuthService {
       }),
     ]);
 
-    return { accessToken, refreshToken };
+    return {
+      message: '회원가입이 성공적으로 되었습니다.',
+      accessToken,
+      refreshToken,
+    };
   }
 
   async signin(authDto: AuthDto) {
@@ -80,7 +87,11 @@ export class AuthService {
     const { accessToken, refreshToken } = await this.getTokens({ email });
     await this.updateHashedRefreshToken(user.id, refreshToken);
 
-    return { accessToken, refreshToken };
+    return {
+      message: '로그인이 성공적으로 되었습니다.',
+      accessToken,
+      refreshToken,
+    };
   }
 
   private async updateHashedRefreshToken(id: number, refreshToken: string) {
