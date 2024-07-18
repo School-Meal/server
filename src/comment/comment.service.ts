@@ -23,7 +23,9 @@ export class CommentService {
   async create(postId: number, createCommentDto: CreateCommentDto, user: User) {
     const post = await this.postRepository.findOne({ where: { id: postId } });
     if (!post) {
-      throw new NotFoundException(`Post with ID "${postId}" not found`);
+      throw new NotFoundException(
+        `ID가 "${postId}" 인 게시물을 찾을 수 없습니다.`,
+      );
     }
 
     const comment = this.commentRepository.create({
@@ -32,24 +34,36 @@ export class CommentService {
       post,
     });
 
+    if (createCommentDto.parentCommentId) {
+      const parentComment = await this.commentRepository.findOne({
+        where: { id: createCommentDto.parentCommentId },
+      });
+      if (!parentComment) {
+        throw new NotFoundException(
+          `ID가 "${createCommentDto.parentCommentId}" 인 부모 댓글을 찾을 수 없습니다.`,
+        );
+      }
+      comment.parentComment = parentComment;
+    }
+
     return this.commentRepository.save(comment);
   }
 
   async findAll(postId: number) {
     return this.commentRepository.find({
-      where: { post: { id: postId } },
-      relations: ['author'],
+      where: { post: { id: postId }, parentComment: null },
+      relations: ['author', 'replies', 'replies.author'],
     });
   }
 
   async findOne(postId: number, id: number) {
     const comment = await this.commentRepository.findOne({
       where: { id, post: { id: postId } },
-      relations: ['author'],
+      relations: ['author', 'replies', 'replies.author'],
     });
 
     if (!comment) {
-      throw new NotFoundException(`Comment with ID "${id}" not found`);
+      throw new NotFoundException(`ID가 "${id}" 인 댓글을 찾을 수 없습니다.`);
     }
 
     return comment;
@@ -64,10 +78,13 @@ export class CommentService {
     const comment = await this.findOne(postId, id);
 
     if (comment.author.id !== user.id) {
-      throw new UnauthorizedException('You can only update your own comments');
+      throw new UnauthorizedException('자신의 댓글만 수정할 수 있습니다.');
     }
 
-    Object.assign(comment, updateCommentDto);
+    if (updateCommentDto.content) {
+      comment.content = updateCommentDto.content;
+    }
+
     return this.commentRepository.save(comment);
   }
 
@@ -75,7 +92,9 @@ export class CommentService {
     const comment = await this.findOne(postId, id);
 
     if (comment.author.id !== user.id) {
-      throw new UnauthorizedException('You can only delete your own comments');
+      throw new UnauthorizedException(
+        '자신이 작성한 댓글만 삭제할 수 있습니다.',
+      );
     }
 
     await this.commentRepository.remove(comment);

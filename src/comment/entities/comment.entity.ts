@@ -3,6 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -22,6 +23,12 @@ export class Comment {
 
   @ManyToOne(() => Post, (post) => post.comments)
   post: Post;
+
+  @ManyToOne(() => Comment, (comment) => comment.replies, { nullable: true })
+  parentComment: Comment;
+
+  @OneToMany(() => Comment, (comment) => comment.parentComment)
+  replies: Comment[];
 
   @CreateDateColumn()
   createdAt: Date;
