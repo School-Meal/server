@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Query,
   HttpException,
   HttpStatus,
   UseFilters,
@@ -32,16 +31,16 @@ export class MealController {
   })
   @ApiOperation({ summary: 'Meal' })
   @Get()
-  async getMeal(
-    @GetUser() user: User,
-    @Query('date') date?: string,
-  ): Promise<MealInfo> {
+  async getMeal(@GetUser() user: User): Promise<MealInfo> {
     if (!user.schoolName) {
       throw new HttpException(
-        'School name is not set for this user',
+        '학교이름을 찾을 수 없습니다.',
         HttpStatus.BAD_REQUEST,
       );
     }
+
+    // 오늘 날짜 계산
+    const today = this.getTodayDate();
 
     // 학교 정보 조회
     const schoolInfo = await this.mealService.getSchoolInfo(user.schoolName);
@@ -50,7 +49,15 @@ export class MealController {
     return this.mealService.getMeal({
       ATPT_OFCDC_SC_CODE: schoolInfo.ATPT_OFCDC_SC_CODE,
       SD_SCHUL_CODE: schoolInfo.SD_SCHUL_CODE,
-      MLSV_YMD: date,
+      MLSV_YMD: today,
     });
+  }
+
+  private getTodayDate(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}${month}${day}`;
   }
 }

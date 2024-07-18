@@ -27,7 +27,10 @@ export class MealService {
       );
 
       if (response.data.RESULT) {
-        throw new HttpException('School not found', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          '학교를 찾을 수 없습니다.',
+          HttpStatus.NOT_FOUND,
+        );
       }
 
       const schoolInfo = response.data.schoolInfo[1].row[0];
@@ -41,7 +44,7 @@ export class MealService {
         throw error;
       }
       throw new HttpException(
-        'Failed to fetch school info',
+        '학교 정보를 가져오지 못했습니다.',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -67,7 +70,10 @@ export class MealService {
       );
 
       if (response.data.RESULT) {
-        throw new HttpException('No meal data found', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          '급식 데이터를 찾을 수 없습니다.',
+          HttpStatus.NOT_FOUND,
+        );
       }
 
       const mealData = response.data.mealServiceDietInfo[1].row;
@@ -84,7 +90,7 @@ export class MealService {
         throw error;
       }
       throw new HttpException(
-        'Failed to fetch meal data',
+        '급식 데이터를 가져오지 못했습니다.',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
