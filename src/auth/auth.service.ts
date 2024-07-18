@@ -27,7 +27,7 @@ export class AuthService {
   ) {}
 
   async signup(authDto: AuthDto) {
-    const { email, password } = authDto;
+    const { email, password, schoolName } = authDto;
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -35,6 +35,7 @@ export class AuthService {
       email,
       password: hashedPassword,
       loginType: 'email',
+      schoolName,
     });
 
     try {

@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     }),
     MealModule,
     AuthModule,
+    PostModule,
   ],
   controllers: [AppController],
   providers: [ConfigService],

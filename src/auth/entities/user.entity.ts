@@ -15,6 +15,9 @@ export class User extends BaseEntity {
   @Column()
   loginType: 'email';
 
+  @Column({ default: '경북소프트웨어고등학교' })
+  schoolName: string;
+
   @Column()
   email: string;
 
