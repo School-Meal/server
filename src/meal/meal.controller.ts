@@ -17,7 +17,7 @@ import { User } from '../auth/entities/user.entity';
 @ApiTags('Meal')
 @UseFilters(HtmlExceptionFilter)
 @Controller('meal')
-@UseGuards(AuthGuard()) // 인증된 사용자만 접근 가능하도록 추가
+@UseGuards(AuthGuard('jwt'))
 export class MealController {
   constructor(private readonly mealService: MealService) {}
 
