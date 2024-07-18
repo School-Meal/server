@@ -1,4 +1,5 @@
 import { Post } from 'src/post/entities/post.entity';
+import { Comment } from 'src/comment/entities/comment.entity';
 import {
   BaseEntity,
   Column,
@@ -37,4 +38,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Post, (post) => post.author)
   posts: Post[];
+
+  @OneToMany(() => Comment, (comment) => comment.author)
+  comments: Comment[];
 }
