@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
+import { Like } from 'src/like/entities/like.entity';
 
 @Entity()
 @Unique(['email'])
@@ -41,4 +42,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Comment, (comment) => comment.author)
   comments: Comment[];
+
+  @OneToMany(() => Like, (like) => like.user)
+  likes: Like[];
 }
