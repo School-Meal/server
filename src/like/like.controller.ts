@@ -21,40 +21,40 @@ export class LikeController {
   constructor(private readonly likeService: LikeService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a like' })
+  @ApiOperation({ summary: '좋아요 생성' })
   @ApiResponse({
     status: 201,
-    description: 'The like has been successfully created.',
+    description: '좋아요가 성공적으로 생성되었습니다.',
   })
   createLike(@Body() createLikeDto: CreateLikeDto, @GetUser() user: User) {
     return this.likeService.createLike(createLikeDto, user);
   }
 
   @Delete(':postId')
-  @ApiOperation({ summary: 'Remove a like' })
+  @ApiOperation({ summary: '좋아요 지우기' })
   @ApiResponse({
     status: 200,
-    description: 'The like has been successfully removed.',
+    description: '좋아요가 성공적으로 제거되었습니다.',
   })
   removeLike(@Param('postId') postId: string, @GetUser() user: User) {
     return this.likeService.removeLike(+postId, user);
   }
 
   @Get('count/:postId')
-  @ApiOperation({ summary: 'Get likes count for a post' })
+  @ApiOperation({ summary: '게시물에 대한 좋아요 수 얻기' })
   @ApiResponse({
     status: 200,
-    description: 'Returns the number of likes for the post.',
+    description: '게시물에 대한 좋아요 수를 반환합니다.',
   })
   getLikesCount(@Param('postId') postId: string) {
     return this.likeService.getLikesCount(+postId);
   }
 
   @Get('user-liked/:postId')
-  @ApiOperation({ summary: 'Check if user has liked a post' })
+  @ApiOperation({ summary: '사용자가 게시물에 좋아요를 표시했는지 확인' })
   @ApiResponse({
     status: 200,
-    description: 'Returns whether the user has liked the post.',
+    description: '사용자가 게시물에 좋아요를 표시했는지 여부를 반환합니다.',
   })
   hasUserLiked(@Param('postId') postId: string, @GetUser() user: User) {
     return this.likeService.hasUserLiked(+postId, user);

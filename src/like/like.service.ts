@@ -25,7 +25,7 @@ export class LikeService {
     });
     if (!post) {
       throw new NotFoundException(
-        `Post with ID "${createLikeDto.postId}" not found`,
+        `ID가 "${createLikeDto.postId}"인 게시물을 찾을 수 없습니다.`,
       );
     }
 
@@ -34,7 +34,7 @@ export class LikeService {
     });
 
     if (existingLike) {
-      throw new ConflictException('You have already liked this post');
+      throw new ConflictException('이미 이 게시물에 좋아요를 표시했습니다.');
     }
 
     const like = this.likeRepository.create({ user, post });
@@ -48,7 +48,7 @@ export class LikeService {
     });
 
     if (result.affected === 0) {
-      throw new NotFoundException(`Like not found`);
+      throw new NotFoundException(`찾을 수 없음`);
     }
   }
 
