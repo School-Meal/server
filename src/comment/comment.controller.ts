@@ -16,10 +16,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/@common/decorators/get-user.decorator';
 import { User } from '../auth/entities/user.entity';
 import { ApiTags, ApiOperation, ApiParam, ApiBody } from '@nestjs/swagger';
-import { HtmlExceptionFilter } from 'src/exception/html-exception.filter';
 
 @ApiTags('Comment')
-@UseFilters(HtmlExceptionFilter)
 @UseGuards(AuthGuard('jwt'))
 @Controller('post/:postId/comments')
 export class CommentController {

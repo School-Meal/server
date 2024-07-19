@@ -5,19 +5,16 @@ import {
   ParseFilePipe,
   Post,
   UploadedFile,
-  UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageService } from './image.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { HtmlExceptionFilter } from 'src/exception/html-exception.filter';
 
 AuthGuard('jwt');
 @ApiTags('Image')
 @Controller('image')
-@UseFilters(HtmlExceptionFilter)
 export class ImageController {
   constructor(private readonly imageService: ImageService) {}
 

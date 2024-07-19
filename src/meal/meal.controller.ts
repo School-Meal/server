@@ -3,19 +3,16 @@ import {
   Get,
   HttpException,
   HttpStatus,
-  UseFilters,
   UseGuards,
 } from '@nestjs/common';
 import { MealService } from './meal.service';
 import { MealInfo } from './interface/meal.interface';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { HtmlExceptionFilter } from 'src/exception/html-exception.filter';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/@common/decorators/get-user.decorator';
 import { User } from '../auth/entities/user.entity';
 
 @ApiTags('Meal')
-@UseFilters(HtmlExceptionFilter)
 @Controller('meal')
 @UseGuards(AuthGuard('jwt'))
 export class MealController {

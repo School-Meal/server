@@ -23,10 +23,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { HtmlExceptionFilter } from 'src/exception/html-exception.filter';
 
 @ApiTags('Post')
-@UseFilters(HtmlExceptionFilter)
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
