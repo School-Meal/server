@@ -1,11 +1,13 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, UseFilters } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
+import { HtmlExceptionFilter } from 'src/exception/html-exception.filter';
 
+@UseFilters(HtmlExceptionFilter)
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(

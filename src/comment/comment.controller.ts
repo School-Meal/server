@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  UseFilters,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -14,18 +15,13 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/@common/decorators/get-user.decorator';
 import { User } from '../auth/entities/user.entity';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiParam,
-  ApiBody,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiParam, ApiBody } from '@nestjs/swagger';
+import { HtmlExceptionFilter } from 'src/exception/html-exception.filter';
 
 @ApiTags('Comment')
-@ApiBearerAuth()
+@UseFilters(HtmlExceptionFilter)
+@UseGuards(AuthGuard('jwt'))
 @Controller('post/:postId/comments')
-@UseGuards(AuthGuard())
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 

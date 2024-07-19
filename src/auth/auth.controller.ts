@@ -5,6 +5,7 @@ import {
   Get,
   Patch,
   Post,
+  UseFilters,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
@@ -15,7 +16,9 @@ import { GetUser } from 'src/@common/decorators/get-user.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { EditProfileDto } from './dto/edit-profile.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { HtmlExceptionFilter } from 'src/exception/html-exception.filter';
 
+@UseFilters(HtmlExceptionFilter)
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
