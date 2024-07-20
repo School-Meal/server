@@ -11,7 +11,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { AuthDto } from './dto/auth.dto';
+import { AuthDto, SignupDto } from './dto/auth.dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -26,8 +26,8 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async signup(authDto: AuthDto) {
-    const { email, password, schoolName, nickname } = authDto;
+  async signup(signupDto: SignupDto) {
+    const { email, password, schoolName, nickname } = signupDto;
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -46,7 +46,6 @@ export class AuthService {
       if (error.code === 'ER_DUP_ENTRY') {
         throw new ConflictException('이미 존재하는 이메일입니다.');
       }
-      // 더 자세한 오류 정보를 로그에 기록
       console.error('회원가입 오류:', error.message);
       throw new InternalServerErrorException(
         '회원가입 도중 에러가 발생했습니다.',
@@ -69,7 +68,6 @@ export class AuthService {
     ]);
 
     return {
-      message: '회원가입이 성공적으로 되었습니다.',
       accessToken,
       refreshToken,
     };

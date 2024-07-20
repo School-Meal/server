@@ -8,11 +8,6 @@ import {
 } from 'class-validator';
 
 export class AuthDto {
-  @ApiProperty({ description: '학교명' })
-  @IsString()
-  @IsNotEmpty()
-  schoolName: string;
-
   @ApiProperty({ description: '이메일' })
   @IsString()
   @MinLength(6)
@@ -32,6 +27,13 @@ export class AuthDto {
     message: '비밀번호가 영어 또는 숫자 조합이 아닙니다.',
   })
   password: string;
+}
+
+export class SignupDto extends AuthDto {
+  @ApiProperty({ description: '학교명' })
+  @IsString()
+  @IsNotEmpty()
+  schoolName: string;
 
   @ApiProperty({ description: '닉네임' })
   @IsString()

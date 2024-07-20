@@ -9,7 +9,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthDto } from './dto/auth.dto';
+import { AuthDto, SignupDto } from './dto/auth.dto';
 import { User } from './entities/user.entity';
 import { GetUser } from 'src/@common/decorators/get-user.decorator';
 import { AuthGuard } from '@nestjs/passport';
@@ -31,8 +31,8 @@ export class AuthController {
   })
   @ApiOperation({ summary: '회원가입' })
   @Post('/signup')
-  signup(@Body(ValidationPipe) authDto: AuthDto) {
-    return this.authService.signup(authDto);
+  signup(@Body(ValidationPipe) signupDto: SignupDto) {
+    return this.authService.signup(signupDto);
   }
 
   @ApiResponse({
