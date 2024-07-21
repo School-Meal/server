@@ -54,7 +54,7 @@ export class MealService {
     ATPT_OFCDC_SC_CODE: string;
     SD_SCHUL_CODE: string;
     MLSV_YMD?: string;
-  }): Promise<MealInfo> {
+  }): Promise<MealInfo | { message: string }> {
     const neis_key = this.configService.get<string>('NEIS_API_KEY');
     const url = 'https://open.neis.go.kr/hub/mealServiceDietInfo';
 
@@ -69,11 +69,8 @@ export class MealService {
         this.httpService.get(url, { params: queryParams }),
       );
 
-      if (response.data.RESULT) {
-        throw new HttpException(
-          '급식 데이터를 찾을 수 없습니다.',
-          HttpStatus.NOT_FOUND,
-        );
+      if (response.data.RESULT && response.data.RESULT.CODE === 'INFO-200') {
+        return { message: '오늘 급식은 없습니다.' };
       }
 
       const mealData = response.data.mealServiceDietInfo[1].row;

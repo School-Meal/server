@@ -28,7 +28,9 @@ export class MealController {
   })
   @ApiOperation({ summary: '급식' })
   @Get()
-  async getMeal(@GetUser() user: User): Promise<MealInfo> {
+  async getMeal(
+    @GetUser() user: User,
+  ): Promise<MealInfo | { message: string }> {
     if (!user.schoolName) {
       throw new HttpException(
         '학교이름을 찾을 수 없습니다.',
@@ -43,11 +45,18 @@ export class MealController {
     const schoolInfo = await this.mealService.getSchoolInfo(user.schoolName);
 
     // 급식 정보 조회
-    return this.mealService.getMeal({
+    const mealInfo = await this.mealService.getMeal({
       ATPT_OFCDC_SC_CODE: schoolInfo.ATPT_OFCDC_SC_CODE,
       SD_SCHUL_CODE: schoolInfo.SD_SCHUL_CODE,
       MLSV_YMD: today,
     });
+
+    // 급식 정보가 없는 경우 처리
+    if ('message' in mealInfo) {
+      return { message: mealInfo.message };
+    }
+
+    return mealInfo;
   }
 
   private getTodayDate(): string {
