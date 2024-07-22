@@ -14,7 +14,7 @@ export class EditProfileDto {
   @MinLength(1)
   @MaxLength(20)
   @IsOptional()
-  nickname?: string;
+  nickName?: string;
 
   @ApiProperty({ description: '이미지 URI' })
   @IsString()

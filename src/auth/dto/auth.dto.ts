@@ -40,5 +40,5 @@ export class SignupDto extends AuthDto {
   @MinLength(1)
   @MaxLength(20)
   @IsNotEmpty()
-  nickname: string;
+  nickName: string;
 }

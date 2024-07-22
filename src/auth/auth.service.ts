@@ -16,6 +16,7 @@ import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { EditProfileDto } from './dto/edit-profile.dto';
+import { ImageService } from '../image/image.service';
 
 @Injectable()
 export class AuthService {
@@ -24,10 +25,11 @@ export class AuthService {
     private userRepository: Repository<User>,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private imageService: ImageService,
   ) {}
 
   async signup(signupDto: SignupDto) {
-    const { email, password, schoolName, nickname } = signupDto;
+    const { email, password, schoolName, nickName } = signupDto;
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -36,7 +38,7 @@ export class AuthService {
       password: hashedPassword,
       loginType: 'email',
       schoolName,
-      nickname,
+      nickName,
     });
 
     try {
@@ -124,7 +126,11 @@ export class AuthService {
     return { ...rest };
   }
 
-  async editProfile(editProfileDto: EditProfileDto, user: User) {
+  async editProfile(
+    editProfileDto: EditProfileDto,
+    user: User,
+    file?: Express.Multer.File,
+  ) {
     const profile = await this.userRepository
       .createQueryBuilder('user')
       .where('user.id = :userId', { userId: user.id })
@@ -134,20 +140,36 @@ export class AuthService {
       throw new NotFoundException('존재하지 않는 사용자입니다.');
     }
 
-    const { nickname, imageUri, email, schoolName } = editProfileDto;
-    profile.nickname = nickname;
-    profile.imageUri = imageUri;
+    const { nickName, email, schoolName } = editProfileDto;
+    profile.nickName = nickName;
     profile.email = email;
     profile.schoolName = schoolName;
+
+    if (file) {
+      try {
+        const imageUrl = await this.imageService.upload(
+          file.originalname,
+          file.buffer,
+        );
+        profile.imageUri = imageUrl;
+      } catch (error) {
+        console.error('이미지 업로드 오류:', error);
+        throw new InternalServerErrorException(
+          '이미지 업로드 중 오류가 발생했습니다.',
+        );
+      }
+    }
 
     try {
       await this.userRepository.save(profile);
     } catch (error) {
-      console.log(error);
+      console.error('프로필 수정 오류:', error);
       throw new InternalServerErrorException(
         '프로필 수정 도중 에러가 발생했습니다.',
       );
     }
+
+    return { message: '프로필이 성공적으로 수정되었습니다.', profile };
   }
 
   async deleteRefreshToken(user: User) {

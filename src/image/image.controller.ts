@@ -5,6 +5,7 @@ import {
   ParseFilePipe,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -12,7 +13,7 @@ import { ImageService } from './image.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 
-AuthGuard('jwt');
+@UseGuards(AuthGuard('jwt'))
 @ApiTags('Image')
 @Controller('image')
 export class ImageController {
@@ -40,6 +41,7 @@ export class ImageController {
     )
     file: Express.Multer.File,
   ) {
-    await this.imageService.upload(file.originalname, file.buffer);
+    const url = await this.imageService.upload(file.originalname, file.buffer);
+    return { url };
   }
 }

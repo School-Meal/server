@@ -7,6 +7,8 @@ import {
   Post,
   UseGuards,
   ValidationPipe,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto, SignupDto } from './dto/auth.dto';
@@ -14,7 +16,13 @@ import { User } from './entities/user.entity';
 import { GetUser } from 'src/@common/decorators/get-user.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { EditProfileDto } from './dto/edit-profile.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiConsumes,
+} from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -80,10 +88,16 @@ export class AuthController {
     description: '사용자를 찾을 수 없음',
   })
   @ApiOperation({ summary: '프로필 수정' })
+  @ApiConsumes('multipart/form-data')
   @Patch('/me')
   @UseGuards(AuthGuard())
-  editProfile(@Body() editProfileDto: EditProfileDto, @GetUser() user: User) {
-    return this.authService.editProfile(editProfileDto, user);
+  @UseInterceptors(FileInterceptor('file'))
+  editProfile(
+    @Body() editProfileDto: EditProfileDto,
+    @GetUser() user: User,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return this.authService.editProfile(editProfileDto, user, file);
   }
 
   @ApiResponse({

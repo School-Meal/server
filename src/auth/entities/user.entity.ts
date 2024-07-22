@@ -29,7 +29,7 @@ export class User extends BaseEntity {
   password: string;
 
   @Column()
-  nickname: string;
+  nickName: string;
 
   @Column({ nullable: true })
   imageUri?: string;
