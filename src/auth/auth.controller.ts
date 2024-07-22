@@ -91,13 +91,13 @@ export class AuthController {
   @ApiConsumes('multipart/form-data')
   @Patch('/me')
   @UseGuards(AuthGuard())
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('image'))
   editProfile(
     @Body() editProfileDto: EditProfileDto,
     @GetUser() user: User,
-    @UploadedFile() file?: Express.Multer.File,
+    @UploadedFile() image?: Express.Multer.File,
   ) {
-    return this.authService.editProfile(editProfileDto, user, file);
+    return this.authService.editProfile(editProfileDto, user, image);
   }
 
   @ApiResponse({

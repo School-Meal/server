@@ -129,7 +129,7 @@ export class AuthService {
   async editProfile(
     editProfileDto: EditProfileDto,
     user: User,
-    file?: Express.Multer.File,
+    image?: Express.Multer.File,
   ) {
     const profile = await this.userRepository
       .createQueryBuilder('user')
@@ -145,11 +145,11 @@ export class AuthService {
     profile.email = email;
     profile.schoolName = schoolName;
 
-    if (file) {
+    if (image) {
       try {
         const imageUrl = await this.imageService.upload(
-          file.originalname,
-          file.buffer,
+          image.originalname,
+          image.buffer,
         );
         profile.imageUri = imageUrl;
       } catch (error) {
