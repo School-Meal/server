@@ -10,12 +10,15 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { Post } from './entities/post.entity';
 import { User } from '../auth/entities/user.entity';
 import { ImageService } from '../image/image.service';
+import { Like } from 'src/like/entities/like.entity';
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectRepository(Post)
     private postRepository: Repository<Post>,
+    @InjectRepository(Like)
+    private likeRepository: Repository<Like>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private imageService: ImageService,
@@ -84,11 +87,16 @@ export class PostService {
 
   async remove(userId: number, id: number) {
     const post = await this.findOne(id);
+    if (!post) {
+      throw new NotFoundException('게시글을 찾을 수 없습니다.');
+    }
     if (post.author.id !== userId) {
       throw new UnauthorizedException(
         '자신이 작성한 게시물만 삭제할 수 있습니다.',
       );
     }
+    await this.likeRepository.delete({ post: { id } });
+
     return this.postRepository.remove(post);
   }
 }

@@ -67,14 +67,14 @@ export class AuthController {
   })
   @ApiOperation({ summary: 'Refresh Token 발급' })
   @Get('/refresh')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard('jwt'))
   refresh(@GetUser() user: User) {
     return this.authService.refreshToken(user);
   }
 
   @ApiOperation({ summary: '프로필 조회' })
   @Get('/me')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard('jwt'))
   getProfile(@GetUser() user: User) {
     return this.authService.getProfile(user);
   }
@@ -90,7 +90,7 @@ export class AuthController {
   @ApiOperation({ summary: '프로필 수정' })
   @ApiConsumes('multipart/form-data')
   @Patch('/me')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FileInterceptor('image'))
   editProfile(
     @Body() editProfileDto: EditProfileDto,
@@ -110,7 +110,7 @@ export class AuthController {
   })
   @ApiOperation({ summary: '로그아웃' })
   @Post('/logout')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard('jwt'))
   logout(@GetUser() user: User) {
     return this.authService.deleteRefreshToken(user);
   }
@@ -125,7 +125,7 @@ export class AuthController {
   })
   @ApiOperation({ summary: '계정 삭제' })
   @Delete('/me')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard('jwt'))
   deleteAccount(@GetUser() user: User) {
     return this.authService.deleteAccount(user);
   }

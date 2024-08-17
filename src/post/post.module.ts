@@ -5,9 +5,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { ImageModule } from 'src/image/image.module';
+import { LikeModule } from 'src/like/like.module';
+import { Like } from 'src/like/entities/like.entity';
+import { User } from 'src/auth/entities/user.entity';
+import { Comment } from 'src/comment/entities/comment.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Post]), AuthModule, ImageModule],
+  imports: [
+    TypeOrmModule.forFeature([Post, Like, User, Comment]),
+    AuthModule,
+    ImageModule,
+    LikeModule,
+  ],
   controllers: [PostController],
   providers: [PostService],
 })
