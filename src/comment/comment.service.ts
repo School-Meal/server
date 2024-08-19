@@ -20,6 +20,27 @@ export class CommentService {
     private postRepository: Repository<Post>,
   ) {}
 
+  private formatCommentResponse(comment: Comment) {
+    const formattedComment = {
+      id: comment.id,
+      content: comment.content,
+      createdAt: comment.createdAt,
+      updatedAt: comment.updatedAt,
+      author: {
+        id: comment.author.id,
+        loginType: comment.author.loginType,
+        schoolName: comment.author.schoolName,
+        email: comment.author.email,
+        nickName: comment.author.nickName,
+        imageUri: comment.author.imageUri,
+      },
+      replies: comment.replies
+        ? comment.replies.map((reply) => this.formatCommentResponse(reply))
+        : [],
+    };
+    return formattedComment;
+  }
+
   async create(postId: number, createCommentDto: CreateCommentDto, user: User) {
     const post = await this.postRepository.findOne({ where: { id: postId } });
     if (!post) {
@@ -29,7 +50,7 @@ export class CommentService {
     }
 
     const comment = this.commentRepository.create({
-      ...createCommentDto,
+      content: createCommentDto.content,
       author: user,
       post,
     });
@@ -46,14 +67,38 @@ export class CommentService {
       comment.parentComment = parentComment;
     }
 
-    return this.commentRepository.save(comment);
+    await this.commentRepository.save(comment);
+    return this.formatCommentResponse(comment);
   }
 
   async findAll(postId: number) {
-    return this.commentRepository.find({
-      where: { post: { id: postId }, parentComment: null },
-      relations: ['author', 'replies', 'replies.author'],
+    const comments = await this.commentRepository.find({
+      where: { post: { id: postId } },
+      relations: ['author', 'replies', 'replies.author', 'parentComment'],
+      order: { createdAt: 'ASC' },
     });
+
+    // 최상위 댓글만 필터링
+    const topLevelComments = comments.filter(
+      (comment) => !comment.parentComment,
+    );
+
+    // 대댓글을 부모 댓글의 replies 배열에 추가
+    const commentMap = new Map(
+      comments.map((comment) => [comment.id, { ...comment, replies: [] }]),
+    );
+    comments.forEach((comment) => {
+      if (comment.parentComment) {
+        const parentComment = commentMap.get(comment.parentComment.id);
+        if (parentComment) {
+          parentComment.replies.push(commentMap.get(comment.id));
+        }
+      }
+    });
+
+    return topLevelComments.map((comment) =>
+      this.formatCommentResponse(commentMap.get(comment.id)),
+    );
   }
 
   async findOne(postId: number, id: number) {
@@ -66,7 +111,7 @@ export class CommentService {
       throw new NotFoundException(`ID가 "${id}" 인 댓글을 찾을 수 없습니다.`);
     }
 
-    return comment;
+    return this.formatCommentResponse(comment);
   }
 
   async update(
@@ -75,7 +120,14 @@ export class CommentService {
     updateCommentDto: UpdateCommentDto,
     user: User,
   ) {
-    const comment = await this.findOne(postId, id);
+    const comment = await this.commentRepository.findOne({
+      where: { id, post: { id: postId } },
+      relations: ['author'],
+    });
+
+    if (!comment) {
+      throw new NotFoundException(`ID가 "${id}" 인 댓글을 찾을 수 없습니다.`);
+    }
 
     if (comment.author.id !== user.id) {
       throw new UnauthorizedException('자신의 댓글만 수정할 수 있습니다.');
@@ -85,11 +137,19 @@ export class CommentService {
       comment.content = updateCommentDto.content;
     }
 
-    return this.commentRepository.save(comment);
+    await this.commentRepository.save(comment);
+    return this.formatCommentResponse(comment);
   }
 
   async remove(postId: number, id: number, user: User) {
-    const comment = await this.findOne(postId, id);
+    const comment = await this.commentRepository.findOne({
+      where: { id, post: { id: postId } },
+      relations: ['author'],
+    });
+
+    if (!comment) {
+      throw new NotFoundException(`ID가 "${id}" 인 댓글을 찾을 수 없습니다.`);
+    }
 
     if (comment.author.id !== user.id) {
       throw new UnauthorizedException(

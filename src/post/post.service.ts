@@ -24,6 +24,25 @@ export class PostService {
     private imageService: ImageService,
   ) {}
 
+  private formatPostResponse(post: Post) {
+    return {
+      id: post.id,
+      title: post.title,
+      content: post.content,
+      imageUrl: post.imageUrl,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+      author: {
+        id: post.author.id,
+        loginType: post.author.loginType,
+        schoolName: post.author.schoolName,
+        email: post.author.email,
+        nickName: post.author.nickName,
+        imageUri: post.author.imageUri,
+      },
+    };
+  }
+
   async create(
     userId: number,
     createPostDto: CreatePostDto,
@@ -46,8 +65,9 @@ export class PostService {
     return this.postRepository.save(post);
   }
 
-  findAll() {
-    return this.postRepository.find({ relations: ['author'] });
+  async findAll() {
+    const posts = await this.postRepository.find({ relations: ['author'] });
+    return posts.map((post) => this.formatPostResponse(post));
   }
 
   async findOne(id: number) {
@@ -58,7 +78,7 @@ export class PostService {
     if (!post) {
       throw new NotFoundException(`ID가 "${id}" 인 게시물을 찾을 수 없습니다.`);
     }
-    return post;
+    return this.formatPostResponse(post);
   }
 
   async update(
@@ -82,11 +102,15 @@ export class PostService {
       post.imageUrl = imageUrl;
     }
     Object.assign(post, updatePostDto);
-    return this.postRepository.save(post);
+    const updatedPost = await this.postRepository.save(post);
+    return this.formatPostResponse(updatedPost);
   }
 
   async remove(userId: number, id: number) {
-    const post = await this.findOne(id);
+    const post = await this.postRepository.findOne({
+      where: { id },
+      relations: ['author'],
+    });
     if (!post) {
       throw new NotFoundException('게시글을 찾을 수 없습니다.');
     }
